@@ -124,6 +124,7 @@ const state = {
   noads: false,
   lastClaimDate: '',
   dailyStreak: 0,
+  lastPlayTime: 0,     // время последнего визита (для бонуса за возвращение)
   stats: { sorted: 0, levels: 0, bestCombo: 0, perfect: 0 },
   tasks: { date: '', list: [] },
   achievements: {},
@@ -205,10 +206,12 @@ async function loadSave() {
 }
 
 async function saveGame() {
+  state.lastPlayTime = Date.now();
   const data = {
     coins: state.coins, level: state.level, muted: state.muted, music: state.music,
     noads: state.noads, lastClaimDate: state.lastClaimDate, dailyStreak: state.dailyStreak,
     stats: state.stats, tasks: state.tasks, achievements: state.achievements, skins: state.skins,
+    lastPlayTime: state.lastPlayTime,
   };
   try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
   if (vkBridge) {
@@ -226,6 +229,20 @@ function showRewardedAd(onReward) {
       if (res && res.result_type === 'reward') onReward();
     })
     .catch((e) => { console.warn('[VK] Ошибка рекламы:', e && e.message); })
+    .finally(() => { startMusic(); });
+}
+
+// Полноэкранная реклама между уровнями (не чаще раза в 90 секунд)
+let lastInterstitialTime = 0;
+
+function showInterstitialAd() {
+  if (state.noads || !vkBridge) return;
+  const now = Date.now();
+  if (now - lastInterstitialTime < 90000) return;
+  lastInterstitialTime = now;
+  stopMusic();
+  vkSend('VKWebAppShowNativeAds', { ad_format: 'interstitial' })
+    .catch(() => {})
     .finally(() => { startMusic(); });
 }
 
@@ -368,6 +385,20 @@ function flashHint(msg) {
   const el = $('hintStatus');
   el.textContent = msg;
   setTimeout(() => { if (el.textContent === msg) el.textContent = ''; }, 2500);
+}
+
+// Бонус за возвращение: игрок не заходил 2+ часа — получает подарок
+function checkReturnBonus() {
+  if (!state.lastPlayTime) return;
+  const awayMs = Date.now() - state.lastPlayTime;
+  const hours = Math.floor(awayMs / 3600000);
+  if (hours < 2) return;
+  const bonus = Math.min(300, 50 + hours * 25);
+  state.coins += bonus;
+  toast('🎁 С возвращением! +' + bonus + ' монет');
+  sfx.claim();
+  saveGame();
+  renderTopBar();
 }
 
 /* ------------------------- Ежедневные награды -------------------------- */
@@ -818,6 +849,7 @@ function nextLevel() {
   state.level++;
   checkAchievements();
   startLevel();
+  showInterstitialAd();
 }
 
 function startLevel() {
@@ -962,6 +994,7 @@ async function init() {
   render();
   updateTaskBadge();
   checkAchievements();
+  checkReturnBonus();
 
   if (canClaimDaily()) setTimeout(showDailyModal, 600);
   showBanner();
