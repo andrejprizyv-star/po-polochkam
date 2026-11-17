@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>По полочкам — сортировка предметов</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Верхняя панель -->
+    <header class="topbar">
+      <div class="topbar__cell topbar__level">
+        <span class="topbar__label">Уровень</span>
+        <span id="levelNum" class="topbar__value">1</span>
+      </div>
+      <div class="topbar__cell topbar__coins">
+        <span class="topbar__coin-icon">🪙</span>
+        <span id="coinsNum" class="topbar__value">0</span>
+      </div>
+      <div class="topbar__cell topbar__lives">
+        <span id="hearts" class="topbar__hearts"></span>
+      </div>
+      <button id="shopBtn" class="icon-btn" aria-label="Магазин">🛒</button>
+      <button id="soundBtn" class="icon-btn" aria-label="Звук">🔊</button>
+    </header>
+
+    <!-- Поле с предметами -->
+    <main class="board">
+      <div id="items" class="items"></div>
+    </main>
+
+    <!-- Полки (категории) -->
+    <section class="shelves-wrap">
+      <div id="shelves" class="shelves"></div>
+    </section>
+
+    <!-- Нижняя панель -->
+    <footer class="bottombar">
+      <button id="hintBtn" class="round-btn" title="Подсказка">💡</button>
+      <button id="tasksBtn" class="round-btn" title="Ежедневные задания">📋<span id="tasksBadge" class="badge" hidden></span></button>
+      <button id="achieveBtn" class="round-btn" title="Достижения и рекорды">🏆</button>
+      <div id="hintStatus" class="hint-status"></div>
+    </footer>
+
+  </div>
+
+  <!-- Модалка победы -->
+  <div id="winModal" class="modal" hidden>
+    <div class="modal__card">
+      <div class="modal__stars" id="winStars"></div>
+      <h2 class="modal__title">Уровень пройден!</h2>
+      <p class="modal__coins">+<span id="winCoins">0</span> 🪙</p>
+      <button id="doubleBtn" class="btn btn--ad">🎬 ×2 монеты за рекламу</button>
+      <button id="nextBtn" class="btn btn--primary">Дальше ▶</button>
+    </div>
+  </div>
+
+  <!-- Модалка проигрыша -->
+  <div id="loseModal" class="modal" hidden>
+    <div class="modal__card">
+      <h2 class="modal__title">Сердечки закончились 💔</h2>
+      <p class="modal__subtitle">Посмотри рекламу и продолжи с ещё одной жизнью</p>
+      <button id="reviveBtn" class="btn btn--ad">🎬 Продолжить (+1 жизнь)</button>
+      <button id="retryBtn" class="btn btn--ghost">Заново</button>
+    </div>
+  </div>
+
+  <!-- Модалка ежедневной награды -->
+  <div id="dailyModal" class="modal" hidden>
+    <div class="modal__card">
+      <div class="daily-emoji">🎁</div>
+      <h2 class="modal__title">Ежедневная награда</h2>
+      <p class="modal__subtitle">День <b id="dailyStreak">1</b> подряд</p>
+      <p class="modal__coins">+<span id="dailyReward">0</span> 🪙</p>
+      <button id="dailyDoubleBtn" class="btn btn--ad">🎬 ×2 за рекламу</button>
+      <button id="dailyClaimBtn" class="btn btn--primary">Забрать</button>
+    </div>
+  </div>
+
+  <!-- Модалка заданий -->
+  <div id="tasksModal" class="modal" hidden>
+    <div class="modal__card">
+      <h2 class="modal__title">📋 Ежедневные задания</h2>
+      <p class="modal__subtitle" id="tasksDate">Обновятся завтра</p>
+      <div id="tasksList" class="tasks"></div>
+      <button id="tasksCloseBtn" class="btn btn--ghost">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модалка достижений и рекордов -->
+  <div id="achieveModal" class="modal" hidden>
+    <div class="modal__card">
+      <h2 class="modal__title">🏆 Достижения</h2>
+      <div id="achieveList" class="achieve"></div>
+      <h3 class="section-title">📊 Рекорды</h3>
+      <div id="leaderboardList" class="leaderboard"></div>
+      <button id="achieveCloseBtn" class="btn btn--ghost">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модалка магазина -->
+  <div id="shopModal" class="modal" hidden>
+    <div class="modal__card">
+      <h2 class="modal__title">🛒 Магазин</h2>
+      <div id="shopItems" class="shop"></div>
+      <h3 class="section-title">🎨 Скины полок</h3>
+      <div id="skinsList" class="skins"></div>
+      <button id="shopCloseBtn" class="btn btn--ghost">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Всплывающее уведомление -->
+  <div id="toast" class="toast" hidden></div>
+
+  <script src="game.js"></script>
+</body>
+</html>
